@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 사주 명언 생성기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --primary-color: #ffd700;
+            --text-color: #e0e0e0;
+            --card-bg: linear-gradient(145deg, #1f1f38, #2c2c4d);
+            --border-color: rgba(255, 215, 0, 0.2);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(0deg, rgba(26, 26, 46, 0.95), rgba(26, 26, 46, 0.95)), url('https://www.transparenttextures.com/patterns/stardust.png');
+            transition: background-color 0.5s;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px 40px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0 0 10px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #b0b0d0;
+            margin: 0;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+        }
+
+        .date-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .date-inputs input {
+            width: 80px;
+            padding: 12px;
+            background: #2a2a4a;
+            border: 1px solid #404060;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 16px;
+            text-align: center;
+            -moz-appearance: textfield;
+        }
+        .date-inputs input::-webkit-outer-spin-button,
+        .date-inputs input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #generate-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #generate-btn:hover {
+            background-color: #ffed4a;
+            transform: scale(1.02);
+        }
+
+        /* Result Section */
+        #result-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        #result-container.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .saju-info {
+            font-size: 18px;
+            font-weight: 500;
+            color: #f0f0f0;
+            margin: 30px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .saju-info span {
+            color: #98fb98;
+            font-weight: 600;
+        }
+        
+        .section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .section h2 {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section h2 .icon {
+            font-size: 24px;
+            margin-right: 12px;
+            opacity: 0.8;
+        }
+
+        .section p, .section li {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #d0d0e0;
+            font-weight: 300;
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 18px;
+            line-height: 1.9;
+            color: #c0c0ff;
+            padding: 20px;
+            border-left: 3px solid var(--primary-color);
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .recommendations .icon {
+            font-size: 20px;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #707090;
+            margin-top: 30px;
+        }
+        
+        #error-message {
+            color: #ff6b6b;
+            margin-top: 15px;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>오늘의 사주 명언 생성기</h1>
+            <p>생년월일을 입력하고 하루의 지혜를 얻어가세요.</p>
+        </div>
+
+        <div class="input-section">
+            <div class="date-inputs">
+                <input type="number" id="year" placeholder="출생연도" min="1900" max="2024">
+                <input type="number" id="month" placeholder="월" min="1" max="12">
+                <input type="number" id="day" placeholder="일" min="1" max="31">
+            </div>
+            <button id="generate-btn">나의 사주 명언 보기</button>
+            <p id="error-message"></p>
+        </div>
+
+        <div id="result-container">
+            <div class="saju-info" id="saju-info-text"></div>
+
+            <div class="section">
+                <h2><span class="icon">✨</span>나의 오늘 하루 운세</h2>
+                <p id="fortune-text"></p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🌿</span>나는 오늘 어떤 마음가짐으로 하루를 보내면 좋을까?</h2>
+                <div id="mindset-quote" class="quote"></div>
+                <p id="mindset-text"></p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">💡</span>나의 어떤 장점을 오늘 발휘할 수 있을까?</h2>
+                <div id="recommendations-list" class="recommendations"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Gemini's Saju Insight. For entertainment purposes only.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- 사주 데이터베이스 ---
+        // 각 일주에 대한 설명을 추가할 수 있습니다.
+        const sajuData = {
+            '갑자': {
+                description: '새로운 시작을 이끄는 <span>푸른 나무(甲)</span>와 지혜의 물(子)을 품은 <span>갑자(甲子) 일주</span>',
+                fortune: '오늘은 당신의 리더십과 창의력이 빛을 발하는 날입니다. 새로운 아이디어가 샘솟고, 주변 사람들이 당신의 의견에 귀를 기울일 것입니다. 망설이지 말고 생각을 펼쳐보세요.',
+                mindsetQuote: '"가장 큰 참나무도 작은 도토리에서 시작된다."',
+                mindsetText: '거대한 계획일지라도 첫걸음이 중요합니다. 오늘 시작하는 작은 일이 미래의 큰 성공을 이끌 것입니다. 자신감을 갖고 첫발을 내딛어 보세요.',
+                recommendations: [
+                    '새로운 프로젝트나 공부를 시작하며 잠재력을 깨워보세요.',
+                    '모임이나 회의에서 주도적으로 의견을 제시하며 리더십을 발휘하세요.',
+                    '자신을 위한 투자(독서, 강의 수강 등)로 지혜를 채워보세요.'
+                ]
+            },
+            '정묘': {
+                description: '어둠 속에서 빛나는 <span>따뜻한 촛불(丁)</span>과 봄의 생명력(卯)을 지닌 <span>정묘(丁卯) 일주</span>',
+                fortune: '오늘은 당신의 섬세한 감성과 따뜻한 마음이 주변에 긍정적인 영향을 줍니다. 예상치 못한 곳에서 당신의 재능을 알아주는 사람을 만나거나, 예술적 영감이 샘솟을 수 있습니다.',
+                mindsetQuote: '"세상을 밝히기 위해 태양이 될 필요는 없다. 한 사람의 길을 비추는 작은 등불만으로도 충분하다."',
+                mindsetText: '모든 것을 완벽하게 해내야 한다는 부담감은 내려놓으세요. 당신의 온화함과 꾸준함이 가장 큰 무기입니다. 작은 선의와 친절을 베푸는 것에 집중해 보세요.',
+                recommendations: [
+                    '아름다운 것을 감상하며(음악, 미술, 자연) 창의적 에너지를 충전하세요.',
+                    '주변 사람에게 다정한 말 한마디, 작은 칭찬을 건네며 관계를 돈독히 하세요.',
+                    '가장 중요한 일 하나를 정해 끝까지 마무리하는 성취감을 느껴보세요.'
+                ]
+            },
+            '경신': {
+                description: '날카로운 결단력을 지닌 <span>강철 바위(庚)</span>의 기상이 모인 <span>경신(庚申) 일주</span>',
+                fortune: '오늘은 당신의 결단력과 추진력이 필요한 날입니다. 미뤄왔던 일이 있다면 오늘 과감하게 처리하기 좋습니다. 의리와 원칙을 지키는 당신의 모습에 주변의 신뢰가 쌓입니다.',
+                mindsetQuote: '"칼은 갈고 닦을수록 날카로워지고, 사람은 단련될수록 강해진다."',
+                mindsetText: '어려운 도전은 당신을 더욱 단단하게 만드는 과정입니다. 복잡한 문제에 부딪히더라도 피하지 말고 정면으로 돌파해 보세요. 당신 안의 강인함이 해답을 찾아줄 것입니다.',
+                recommendations: [
+                    '오랫동안 고민했던 문제에 대해 명확한 결정을 내려보세요.',
+                    '공적인 일과 사적인 일을 분명히 구분하여 원칙을 지키는 모습을 보여주세요.',
+                    '운동이나 신체 활동을 통해 넘치는 에너지를 긍정적으로 발산하세요.'
+                ]
+            },
+            '임자': {
+                description: '모든 것을 품는 <span>거대한 바다(壬)</span>의 지혜가 넘실대는 <span>임자(壬子) 일주</span>',
+                fortune: '깊은 지혜와 통찰력이 빛을 발하는 하루입니다. 복잡한 상황의 본질을 꿰뚫어 보고 현명한 판단을 내릴 수 있습니다. 사람들의 고민을 들어주고 조언자 역할을 하기에 좋은 날입니다.',
+                mindsetQuote: '"가장 깊은 강은 가장 조용히 흐른다."',
+                mindsetText: '겉으로 드러내지 않아도 당신의 내면에는 큰 힘과 지혜가 있습니다. 성급하게 행동하기보다 차분히 상황을 관망하며 최적의 타이밍을 기다리세요. 당신의 침묵은 때로 어떤 말보다 강력합니다.',
+                recommendations: [
+                    '명상이나 조용한 사색을 통해 내면의 목소리에 귀 기울여보세요.',
+                    '비밀이나 중요한 정보를 다룰 때 신중함을 발휘하여 신뢰를 얻으세요.',
+                    '다른 사람의 이야기를 깊이 경청하며 포용력을 보여주세요.'
+                ]
+            },
+            '기미': {
+                description: '만물을 키워내는 <span>부드러운 대지(己)</span>의 품을 지닌 <span>기미(己未) 일주</span>',
+                fortune: '안정감과 신뢰를 바탕으로 주변 사람들을 편안하게 만드는 하루입니다. 당신의 인내심과 꾸준함이 인정을 받고, 협업을 통해 좋은 결과를 만들어낼 수 있습니다.',
+                mindsetQuote: '"서두르지 마라, 그러나 쉬지도 마라."',
+                mindsetText: '결과가 바로 보이지 않더라도 당신의 노력은 차곡차곡 쌓이고 있습니다. 묵묵히 자신의 길을 가는 당신의 성실함이 결국에는 풍성한 결실을 맺게 할 것입니다. 과정을 믿으세요.',
+                recommendations: [
+                    '팀 프로젝트나 협업에서 중재자 역할을 맡아 조화를 이끌어내세요.',
+                    '가족이나 가까운 사람들을 위해 정성이 담긴 요리를 대접해보세요.',
+                    '장기적인 계획을 세우거나 기존의 계획을 점검하며 기반을 다지세요.'
+                ]
+            }
+        };
+
+        // --- 메인 스크립트 ---
+        const generateBtn = document.getElementById('generate-btn');
+        const resultContainer = document.getElementById('result-container');
+        const errorMessage = document.getElementById('error-message');
+
+        generateBtn.addEventListener('click', () => {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const day = parseInt(document.getElementById('day').value);
+
+            if (isValidDate(year, month, day)) {
+                errorMessage.style.display = 'none';
+                const dailyPillar = getDailyPillar(year, month, day);
+                displayResult(dailyPillar);
+            } else {
+                errorMessage.textContent = '올바른 날짜를 입력해주세요. (예: 1999년 8월 15일)';
+                errorMessage.style.display = 'block';
+                resultContainer.classList.remove('show');
+            }
+        });
+
+        function isValidDate(y, m, d) {
+            if (!y || !m || !d) return false;
+            if (y < 1900 || y > 2025) return false;
+            const date = new Date(y, m - 1, d);
+            return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+        }
+
+        function getDailyPillar(year, month, day) {
+            // 천간(10)과 지지(12) 배열
+            const heavenlyStems = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
+            const earthlyBranches = ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'];
+
+            // 기준일: 2000년 1월 1일은 경진(庚辰)일
+            // 경(7번째 천간, 인덱스 6), 진(5번째 지지, 인덱스 4)
+            const refDate = new Date(2000, 0, 1);
+            const refStemIndex = 6;
+            const refBranchIndex = 4;
+
+            const inputDate = new Date(year, month - 1, day);
+            
+            // 날짜 차이 계산 (밀리초 -> 일)
+            const diff = Math.round((inputDate - refDate) / (1000 * 60 * 60 * 24));
+
+            // 일주 계산
+            const stemIndex = (refStemIndex + diff) % 10;
+            const branchIndex = (refBranchIndex + diff) % 12;
+
+            // 음수 인덱스 방지
+            const finalStemIndex = stemIndex < 0 ? stemIndex + 10 : stemIndex;
+            const finalBranchIndex = branchIndex < 0 ? branchIndex + 12 : branchIndex;
+
+            return heavenlyStems[finalStemIndex] + earthlyBranches[finalBranchIndex];
+        }
+
+        function displayResult(pillar) {
+            const data = sajuData[pillar] || {
+                description: `당신은 고유한 매력을 지닌 <span>${pillar} 일주</span>의 소유자입니다.`,
+                fortune: '오늘은 새로운 가능성을 발견하는 하루입니다. 평소와 다른 길로 가보거나 새로운 사람을 만나보세요. 작은 변화가 즐거운 경험으로 이어질 것입니다.',
+                mindsetQuote: '"세상에 단 하나뿐인 당신의 빛깔을 찾아보세요."',
+                mindsetText: '정해진 틀에 자신을 맞추기보다, 당신만이 가진 고유한 장점을 발견하고 키워나가는 것에 집중하세요. 당신의 개성이 가장 강력한 무기가 될 수 있습니다.',
+                recommendations: [
+                    '자신의 강점과 약점을 생각해보고 글로 적어보세요.',
+                    '평소에 하지 않았던 새로운 일에 도전해보세요 (예: 새로운 장소 방문).',
+                    '나 자신에게 칭찬 한마디를 건네며 하루를 시작하고 마무리하세요.'
+                ]
+            };
+
+            document.getElementById('saju-info-text').innerHTML = data.description;
+            document.getElementById('fortune-text').textContent = data.fortune;
+            document.getElementById('mindset-quote').textContent = data.mindsetQuote;
+            document.getElementById('mindset-text').textContent = data.mindsetText;
+
+            const recommendationsList = document.getElementById('recommendations-list');
+            recommendationsList.innerHTML = ''; // 기존 목록 초기화
+            const ul = document.createElement('ul');
+            const icons = ['🎨', '🗣️', '🎯', '🌿', '💡'];
+            data.recommendations.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="icon">${icons[index % icons.length]}</span><span>${item}</span>`;
+                ul.appendChild(li);
+            });
+            recommendationsList.appendChild(ul);
+            
+            if (!resultContainer.classList.contains('show')) {
+                resultContainer.classList.add('show');
+            }
+        }
+    </script>
+
+</body>
+</html>
